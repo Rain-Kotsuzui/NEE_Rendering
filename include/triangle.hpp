@@ -21,6 +21,7 @@ public:
 	bool intersect( const Ray& ray,  Hit& hit , float tmin) override {
         return false;
 	}
+	void printInfo()override{}
 	Vector3f normal;
 	Vector3f vertices[3];
 protected:

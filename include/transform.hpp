@@ -35,7 +35,8 @@ public:
         }
         return inter;
     }
-
+    void printInfo()override{}
+    
 protected:
     Object3D *o; //un-transformed object
     Matrix4f transform;

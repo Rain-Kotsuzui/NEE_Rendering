@@ -24,7 +24,7 @@ public:
     bool intersect(const Ray &r, Hit &h, float tmin) override {
         return false;
     }
-
+    void printInfo()override{}
 protected:
 
 
