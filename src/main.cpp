@@ -29,8 +29,9 @@ int main(int argc, char *argv[]) {
 
     // TODO: Main RayCasting Logic
     // First, parse the scene using SceneParser.
-    SceneParser *scene=new SceneParser(inputFile.c_str());
+    SceneParser *scene=new SceneParser(("testcases/"+inputFile).c_str());
     // Then loop over each pixel in the image, shooting a ray
+    
     // through that pixel and finding its intersection with
     // the scene.  Write the color at the intersection to that
     // pixel in your output image.
