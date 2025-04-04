@@ -11,6 +11,8 @@ public:
     Sphere()
     {
         // unit ball at the center
+        center=Vector3f::ZERO;
+        radius=1;
     }
 
     Sphere(const Vector3f &center, float radius, Material *material) : Object3D(material), radius(radius), center(center)

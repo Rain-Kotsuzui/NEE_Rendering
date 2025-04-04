@@ -6,8 +6,8 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/PA1",
         "args": [
-            "testcases/scene01_basic.txt",
-            "output/01.bmp"
+            "testcases/scene06_bunny_1k.txt",
+            "output/06.bmp"
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
