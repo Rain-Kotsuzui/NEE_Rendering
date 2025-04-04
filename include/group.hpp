@@ -26,13 +26,10 @@ public:
 
     bool intersect(const Ray &r, Hit &h, float tmin) override
     {
-        bool s = false;
+        bool result = false;
         for (auto obj : objectList)
-        {
-            if (obj->intersect(r, h, tmin))
-                s = true;
-        }
-        return s;
+            result |= obj->intersect(r, h, tmin);
+        return result;
     }
 
     void addObject(int index, Object3D *obj)

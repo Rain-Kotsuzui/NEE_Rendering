@@ -7,7 +7,6 @@
 #include <iostream>
 using namespace std;
 
-// TODO: implement this class and add more fields as necessary,
 class Triangle : public Object3D
 {
 
@@ -25,13 +24,12 @@ public:
 		float t1 = Matrix3f(ray.getDirection(), E1, E2, 1).determinant();
 		if (abs(t1) < 1e-6)
 			return false;
-        float t=Matrix3f(S, E1, E2, 1).determinant()/t1;
-		float beta=Matrix3f(ray.getDirection(), S, E2, 1).determinant()/t1;
-		float gamma=Matrix3f(ray.getDirection(), E1, S, 1).determinant()/t1;
-		if(t>tmin&&beta>=0&&beta<=1&&gamma>=0&&gamma<=1&&beta+gamma<=1&&t<hit.getT())
+		float t = Matrix3f(S, E1, E2, 1).determinant() / t1;
+		float beta = Matrix3f(ray.getDirection(), S, E2, 1).determinant() / t1;
+		float gamma = Matrix3f(ray.getDirection(), E1, S, 1).determinant() / t1;
+		if (t > tmin && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1 && beta + gamma <= 1 && t < hit.getT())
 		{
-            Vector3f norm=(Vector3f::cross(E1,E2)).normalized();
-            hit.set(t, material, norm);
+			hit.set(t, material, normal);
 			return true;
 		}
 		return false;
