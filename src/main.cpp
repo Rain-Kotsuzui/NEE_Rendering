@@ -40,12 +40,14 @@ int main(int argc, char *argv[])
     Image renderedImg(camera->getWidth(), camera->getHeight());
     // Then loop over each pixel in the image, shooting a ray
 
-    long tot = camera->getWidth() * camera->getHeight();
-    long now = 0;
-    auto start = std::chrono::high_resolution_clock::now();
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-    float time;
+    
+        long tot = camera->getWidth() * camera->getHeight();
+        long now = 0;
+        auto start = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+        float time;
+    
     for (int u = 0; u < camera->getWidth(); u++)
     {
         for (int v = 0; v < camera->getHeight(); v++)
@@ -72,20 +74,21 @@ int main(int argc, char *argv[])
             else
                 renderedImg.SetPixel(u, v, sceneParser.getBackgroundColor());
 
-            now++;
+             now++;
         }
-
-        end = std::chrono::high_resolution_clock::now();
-        duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        time=duration.count()/1e6;
-        std::cout <<std::fixed<<std::setprecision(2)<<time*(tot*1.0/now-1) <<" seconds remain"<<std::endl;
-        std::cout << "\033[2J\033[1;1H";
+        
+                end = std::chrono::high_resolution_clock::now();
+                duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+                time = duration.count() / 1e6;
+                std::cout << std::fixed << std::setprecision(2) << time * (tot * 1.0 / now - 1) << " seconds remain" << std::endl;
+                std::cout << "\033[2J\033[1;1H";
+         
     }
     renderedImg.SaveImage(outputFile.c_str());
     // through that pixel and finding its intersection with
     // the scene.  Write the color at the intersection to that
     // pixel in your output image.
-    //std::cout << "Hello! Computer Graphics!" << endl;
-    std::cout<<time<<" seconds cost";
+    // std::cout << "Hello! Computer Graphics!" << endl;
+    std::cout << time << " seconds cost";
     return 0;
 }
