@@ -73,16 +73,14 @@ int main(int argc, char *argv[])
             }
             else
                 renderedImg.SetPixel(u, v, sceneParser.getBackgroundColor());
-
+                
              now++;
+             end = std::chrono::high_resolution_clock::now();
+             duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+             time = duration.count() / 1e6;
+             std::cout << std::fixed << std::setprecision(2) << time * (tot * 1.0 / now - 1) << " seconds remain" << std::endl;
+             std::cout << "\033[2J\033[1;1H";
         }
-        
-                end = std::chrono::high_resolution_clock::now();
-                duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-                time = duration.count() / 1e6;
-                std::cout << std::fixed << std::setprecision(2) << time * (tot * 1.0 / now - 1) << " seconds remain" << std::endl;
-                std::cout << "\033[2J\033[1;1H";
-         
     }
     renderedImg.SaveImage(outputFile.c_str());
     // through that pixel and finding its intersection with
