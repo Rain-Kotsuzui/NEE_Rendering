@@ -42,7 +42,7 @@ public:
 
     void printInfo() override
     {
-        std::cout << "Sphere Center: " << center.x() << " " << center.y() << " " << center.z() << " radius:" << radius << endl;
+        std::cout << "Sphere Center: " << center.x() << " " << center.y() << " " << center.z() << " radius:" << radius << std::endl;
     }
 
 protected:

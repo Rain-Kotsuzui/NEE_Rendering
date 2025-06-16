@@ -52,7 +52,6 @@ private:
     float t;
     Material *material;
     Vector3f normal;
-
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Hit &h) {

@@ -6,8 +6,8 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/PA1",
         "args": [
-            "testcases/nailong.txt",
-            "output/nailong.bmp"
+            "testcases/scene03_sphere.txt",
+            "output/03.bmp"
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",

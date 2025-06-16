@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-PROJECT(PA1 CXX)
+PROJECT(final CXX)
 
 IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release)
@@ -7,13 +7,13 @@ ENDIF()
 
 ADD_SUBDIRECTORY(deps/vecmath)
 
-SET(PA1_SOURCES
+SET(final_SOURCES
         src/image.cpp
         src/main.cpp
         src/mesh.cpp
         src/scene_parser.cpp)
 
-SET(PA1_INCLUDES
+SET(final_INCLUDES
         include/camera.hpp
         include/group.hpp
         include/hit.hpp
@@ -28,10 +28,11 @@ SET(PA1_INCLUDES
         include/sphere.hpp
         include/transform.hpp
         include/triangle.hpp
+        include/parameter.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)
 
-ADD_EXECUTABLE(${PROJECT_NAME} ${PA1_SOURCES} ${PA1_INCLUDES})
+ADD_EXECUTABLE(${PROJECT_NAME} ${final_SOURCES} ${final_INCLUDES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} vecmath)
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PRIVATE include)

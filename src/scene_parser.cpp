@@ -241,6 +241,9 @@ Material *SceneParser::parseMaterial() {
     filename[0] = 0;
     Vector3f diffuseColor(1, 1, 1), specularColor(0, 0, 0);
     float shininess = 0;
+    bool isReflective = true;
+
+
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
@@ -254,12 +257,15 @@ Material *SceneParser::parseMaterial() {
         } else if (strcmp(token, "texture") == 0) {
             // Optional: read in texture and draw it.
             getToken(filename);
-        } else {
+        } else if (strcmp(token, "isReflective") == 0) {
+            isReflective = readInt() == 1;
+        }
+        else {
             assert (!strcmp(token, "}"));
             break;
         }
     }
-    auto *answer = new Material(diffuseColor, specularColor, shininess);
+    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective);
     return answer;
 }
 
