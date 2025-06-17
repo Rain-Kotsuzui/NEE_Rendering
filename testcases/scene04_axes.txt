@@ -1,11 +1,11 @@
 
 PerspectiveCamera {
-    center 13 11 30
+    center 13 7 30
     direction -.16 -.12 -.5
     up 0 1 0
     angle 30
-    width 200
-    height 200
+    width 400
+    height 400
 }
 
 Lights {
@@ -22,14 +22,14 @@ Background {
 
 Materials {
     numMaterials 4
-    Material { diffuseColor 1 0 0 }
-    Material { diffuseColor 0 1 0 }
-    Material { diffuseColor 0 0 1 }
-    Material { diffuseColor 1 1 1 }
+    Material { diffuseColor 1 0 0 isReflective 0}
+    Material { diffuseColor 0 1 0 isReflective 0}
+    Material { diffuseColor 0 0 1 isReflective 0}
+    Material { diffuseColor 1 1 1 isReflective 0}
 }
 
 Group {
-    numObjects 2
+    numObjects 3
     Group {
         numObjects 3   
         MaterialIndex 0
@@ -57,6 +57,13 @@ Group {
             }
         }    
     }
+    
+    MaterialIndex 3
+    Plane {
+	normal 0 1 0
+        offset -1
+    }
+
     MaterialIndex 3
     Transform {
         Translate  4 3 1 

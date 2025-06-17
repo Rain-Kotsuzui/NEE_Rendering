@@ -29,6 +29,8 @@ SET(final_INCLUDES
         include/transform.hpp
         include/triangle.hpp
         include/parameter.hpp
+        include/timer.hpp
+        include/render.hpp
         )
 
 SET(CMAKE_CXX_STANDARD 11)

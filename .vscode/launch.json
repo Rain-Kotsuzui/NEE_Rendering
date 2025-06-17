@@ -4,10 +4,11 @@
         "name": "Debug!!!",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/build/PA1",
+        "program": "${workspaceFolder}/build/final",
         "args": [
-            "testcases/scene03_sphere.txt",
-            "output/03.bmp"
+            "testcases/test.txt",
+            "output/03.bmp",
+            "basic_1"
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",

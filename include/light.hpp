@@ -11,6 +11,10 @@ public:
     virtual ~Light() = default;
 
     virtual void getIllumination(const Vector3f &p, Vector3f &dir, Vector3f &col) const = 0;
+
+    virtual const Vector3f getDirection(const Vector3f &p) const = 0;
+
+    virtual const bool isShadowed(const long &T,const Vector3f &p) const =0;
 };
 
 
@@ -34,6 +38,13 @@ public:
         col = color;
     }
 
+    const Vector3f getDirection(const Vector3f &p) const override {
+        return -direction.normalized();
+    }
+    const bool isShadowed(const long &T,const Vector3f &p) const override {
+        // 光线在无穷远处
+        return false;
+    }
 private:
 
     Vector3f direction;
@@ -59,7 +70,13 @@ public:
         dir = dir / dir.length();
         col = color;
     }
-
+    
+    const Vector3f getDirection(const Vector3f &p) const override {
+        return (position-p).normalized();
+    }
+    const bool isShadowed(const long &T,const Vector3f &p) const override {
+        return (T < (position - p).length());
+    }
 private:
 
     Vector3f position;

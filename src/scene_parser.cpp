@@ -241,8 +241,9 @@ Material *SceneParser::parseMaterial() {
     filename[0] = 0;
     Vector3f diffuseColor(1, 1, 1), specularColor(0, 0, 0);
     float shininess = 0;
+    float refractiveIndex = 1.0f; // 默认真空折射率
     bool isReflective = true;
-
+    bool isRefractive = false; // 默认为非折射材质
 
     getToken(token);
     assert (!strcmp(token, "{"));
@@ -259,13 +260,16 @@ Material *SceneParser::parseMaterial() {
             getToken(filename);
         } else if (strcmp(token, "isReflective") == 0) {
             isReflective = readInt() == 1;
+        }else if(strcmp(token,"Refractive")==0){
+            isRefractive = true;
+            refractiveIndex = readFloat();
         }
         else {
             assert (!strcmp(token, "}"));
             break;
         }
     }
-    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective);
+    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective,isRefractive,refractiveIndex);
     return answer;
 }
 
