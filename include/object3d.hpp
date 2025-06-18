@@ -1,8 +1,8 @@
 #ifndef OBJECT3D_H
 #define OBJECT3D_H
 
-#include "ray.hpp"
 #include "hit.hpp"
+#include "ray.hpp"
 #include "material.hpp"
 
 // Base class for all 3d entities.
@@ -17,7 +17,12 @@ public:
     {
         this->material = material;
     }
-
+    void setMaterial(Material *m) {
+        material = m;
+    }
+    Material *getMaterial() const {
+        return material;
+    }
     // Intersect Ray with this object. If hit, store information in hit structure.
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
     virtual void printInfo() = 0;

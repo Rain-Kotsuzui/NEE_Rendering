@@ -27,8 +27,24 @@ public:
     bool intersect(const Ray &r, Hit &h, float tmin) override
     {
         bool result = false;
+        Material *hitMaterial = h.getMaterial();
         for (auto obj : objectList)
             result |= obj->intersect(r, h, tmin);
+        if (result&&h.getMaterial()->isRefractive&&hitMaterial == h.getMaterial())
+            h.setMaterial(VOID); // 折射出射
+        return result;
+    }
+    bool shadow_intersect(const Ray &r, Hit &h, float tmin)
+    {
+        bool result = false;
+        Material *hitMaterial = h.getMaterial();
+        for (auto obj : objectList)
+        {
+            
+            if(obj->getMaterial()==nullptr||obj->getMaterial()->isRefractive) // 如果材质是折射材质，则不计算阴影
+                continue;
+            result |= obj->intersect(r, h, tmin);
+        }
         return result;
     }
 

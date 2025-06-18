@@ -6,8 +6,8 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/final",
         "args": [
-            "testcases/test.txt",
-            "output/03.bmp",
+            "testcases/cornellbox.txt",
+            "output/refract.bmp",
             "basic_1"
         ],
         "stopAtEntry": false,

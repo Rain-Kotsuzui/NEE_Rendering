@@ -29,7 +29,9 @@ public:
         if (del < 0)
             return false;
         float t = -Vector3f::dot(r.getDirection(), r.getOrigin() - center) - sqrt(del) / 2;
-        
+        float t1 = -Vector3f::dot(r.getDirection(), r.getOrigin() - center) + sqrt(del) / 2;
+        if((r.getOrigin()-center).length()<radius-0.01) // 如果光线起点在球内
+            t=t1; // 取正的t
         if (t > tmin && t < h.getT())
         {
             Vector3f norm=(r.pointAtParameter(t)-center).normalized();

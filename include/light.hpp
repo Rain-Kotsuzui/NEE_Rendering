@@ -14,7 +14,7 @@ public:
 
     virtual const Vector3f getDirection(const Vector3f &p) const = 0;
 
-    virtual const bool isShadowed(const long &T,const Vector3f &p) const =0;
+    virtual const bool isShadowed(const float &T,const Vector3f &p) const =0;
 };
 
 
@@ -41,7 +41,7 @@ public:
     const Vector3f getDirection(const Vector3f &p) const override {
         return -direction.normalized();
     }
-    const bool isShadowed(const long &T,const Vector3f &p) const override {
+    const bool isShadowed(const float &T,const Vector3f &p) const override {
         // 光线在无穷远处
         return false;
     }
@@ -74,7 +74,7 @@ public:
     const Vector3f getDirection(const Vector3f &p) const override {
         return (position-p).normalized();
     }
-    const bool isShadowed(const long &T,const Vector3f &p) const override {
+    const bool isShadowed(const float &T,const Vector3f &p) const override {
         return (T < (position - p).length());
     }
 private:

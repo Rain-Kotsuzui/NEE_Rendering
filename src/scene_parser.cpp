@@ -53,7 +53,6 @@ SceneParser::SceneParser(const char *filename) {
 }
 
 SceneParser::~SceneParser() {
-
     delete group;
     delete camera;
 
@@ -244,6 +243,8 @@ Material *SceneParser::parseMaterial() {
     float refractiveIndex = 1.0f; // 默认真空折射率
     bool isReflective = true;
     bool isRefractive = false; // 默认为非折射材质
+    float Kr = DEFAULT_KR; // 反射衰减系数
+    float Ks = DEFAULT_KS; // 折射衰减系数
 
     getToken(token);
     assert (!strcmp(token, "{"));
@@ -263,13 +264,17 @@ Material *SceneParser::parseMaterial() {
         }else if(strcmp(token,"Refractive")==0){
             isRefractive = true;
             refractiveIndex = readFloat();
+        }else if(strcmp(token, "Kr") == 0) {
+            Kr = readFloat();
+        } else if (strcmp(token, "Ks") == 0) {
+            Ks = readFloat();
         }
         else {
             assert (!strcmp(token, "}"));
             break;
         }
     }
-    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective,isRefractive,refractiveIndex);
+    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective,isRefractive,refractiveIndex,Kr,Ks);
     return answer;
 }
 

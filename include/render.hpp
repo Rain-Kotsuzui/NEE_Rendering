@@ -9,6 +9,7 @@
 #include "scene_parser.hpp"
 #include "light.hpp"
 #include "parameter.hpp"
+#include "material.hpp"
 class Render
 {
 public:
@@ -34,42 +35,44 @@ public:
         // 递归式光线追踪
         for (int bounce = 0; bounce < MAX_BOUNCE + 1 && camRay.getLength() < INFINITY_LENGTH; bounce++)
         {
-            hit = Hit(); // 每次反射前重置hit
+            hit.resetRemainMaterial(); // 每次反射前重置hit
             bool isIntersect = baseGroup->intersect(camRay, hit, EPS);
             Vector3f nowColor = Vector3f::ZERO;
             if (isIntersect)
             {
-                // 基础要求1.1-反射与折射
-                if (hit.getMaterial()->isReflective)
-                    camRay.reflect(hit);
-                else if (hit.getMaterial()->isRefractive)
-                    camRay.refract(hit);
-                else
-                    camRay.miss();
-
                 for (int li = 0; li < sceneParser->getNumLights(); li++)
                 {
                     Light *light = sceneParser->getLight(li);
                     // 基础要求1.2-shadow ray
                     Ray shadowRay = Ray(camRay.pointAtParameter(hit.getT()), light->getDirection(camRay.pointAtParameter(hit.getT())));
                     Hit shadowHit;
-                    bool isShadowed = baseGroup->intersect(shadowRay, shadowHit, EPS);
+                    bool isShadowed = baseGroup->shadow_intersect(shadowRay, shadowHit, EPS);
                     if (isShadowed && light->isShadowed(shadowHit.getT(), camRay.pointAtParameter(hit.getT())))
                         continue; // 光线被遮挡，跳过
 
                     Vector3f L, lightColor;
                     light->getIllumination(camRay.pointAtParameter(hit.getT()), L, lightColor);
-                    nowColor = hit.getMaterial()->Shade(camRay, hit, L, lightColor);
+                    nowColor += hit.getMaterial()->Shade(camRay.getDirection(), hit.getNormal(), L, lightColor);
                 }
+                finalColor += nowColor * camRay.getKs() * camRay.getKr();
+
+                // 基础要求1.1-反射与折射二选一
+                if (hit.getMaterial()->isRefractive)
+                    camRay.refract(hit);
+                else if (hit.getMaterial()->isReflective)
+                    camRay.reflect(hit);
+                else
+                    camRay.miss();
             }
             else
             {
                 nowColor = sceneParser->getBackgroundColor();
+
+                finalColor += nowColor * camRay.getKs() * camRay.getKr();
                 camRay.miss();
             }
-            // accumulate the color
-            finalColor += nowColor * camRay.getKs()*camRay.getKr(); // 第n次反射，ray的衰减系数为Ks^(n-1)
         }
+        finalColor += ENV_LIGHT*camRay.getKr()*camRay.getKs()*0.5; // 环境光
     }
 
     Vector3f getFinalColor() const

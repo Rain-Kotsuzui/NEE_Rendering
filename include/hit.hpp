@@ -2,9 +2,7 @@
 #define HIT_H
 
 #include <vecmath.h>
-#include "ray.hpp"
-
-class Material;
+#include "material.hpp"
 
 class Hit {
 public:
@@ -26,14 +24,18 @@ public:
         material = h.material;
         normal = h.normal;
     }
-
+    
     // destructor
     ~Hit() = default;
-
+    
+    void resetRemainMaterial() {
+        t = 1e38;
+        normal = Vector3f::ZERO;
+    }
     float getT() const {
         return t;
     }
-
+    
     Material *getMaterial() const {
         return material;
     }
@@ -46,6 +48,9 @@ public:
         t = _t;
         material = m;
         normal = n;
+    }
+    void setMaterial(Material *m) {
+        material = m;
     }
 
 private:
