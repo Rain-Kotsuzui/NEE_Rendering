@@ -20,8 +20,10 @@ public:
             std::chrono::duration_cast<std::chrono::microseconds>(now - start);
         time = duration.count() / 1e6;
         std::cout << std::fixed << std::setprecision(2)
-                  << time * (tot * 1.0 / now_pixels - 1) << " seconds remain"
-                  << std::endl;
+                  << time * (tot * 1.0 / now_pixels - 1) << " seconds remain,now: "
+                  << now_pixels*100.0/tot 
+                  <<"%"
+                  <<std::endl;
         std::cout << "\033[2J\033[1;1H";
     }
     float getTime() const

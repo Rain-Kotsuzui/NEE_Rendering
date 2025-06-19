@@ -10,9 +10,9 @@ PerspectiveCamera {
 
 Lights {
     numLights 1
-    DirectionalLight {
-        direction -0.2 -0.4 -0.8
-        color 0.8 0.8 0.8
+    AreaLight {
+        intensity 20
+        obj_file mesh/light.obj
     }
 }
 
@@ -34,7 +34,7 @@ Materials {
 }
 
 Group {
-    numObjects 4
+    numObjects 2
     Group {
         numObjects 3   
         MaterialIndex 0
@@ -68,17 +68,5 @@ Group {
 	normal 0 1 0
         offset -1
     }
-
-    MaterialIndex 4
-   
-        TriangleMesh {
-             obj_file mesh/cube.obj
-        }
     
-    MaterialIndex 5
-   
-        Sphere {
-            center 5 5 5
-            radius 1
-        }
 }

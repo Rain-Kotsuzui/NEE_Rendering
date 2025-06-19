@@ -27,6 +27,7 @@ Materials {
       shininess 20
       isReflective 1
       Ks 1
+      
     }
     Material { diffuseColor 0 1 0 
       specularColor 0 1 0

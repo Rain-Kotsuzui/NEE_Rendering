@@ -82,6 +82,7 @@ Mesh::Mesh(const char *filename, Material *material) : Object3D(material) {
   f.close();
 }
 
+
 void Mesh::computeNormal() {
   n.resize(t.size());
   for (int triId = 0; triId < (int)t.size(); ++triId) {
@@ -91,4 +92,12 @@ void Mesh::computeNormal() {
     b = Vector3f::cross(a, b);
     n[triId] = b / b.length();
   }
+}
+
+Vector3f Mesh::getCenter() {
+  Vector3f center = Vector3f::ZERO;
+  for (const auto &vertex : v) {
+    center += vertex;
+  }
+  return center / v.size();
 }

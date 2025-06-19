@@ -6,9 +6,9 @@
         "request": "launch",
         "program": "${workspaceFolder}/build/final",
         "args": [
-            "testcases/cornellbox.txt",
-            "output/refract.bmp",
-            "basic_1"
+            "testcases/cornellbox_2.txt",
+            "output/basic_2.bmp",
+            "basic_2"
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",

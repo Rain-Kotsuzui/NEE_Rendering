@@ -5,11 +5,15 @@
 #include <vecmath.h>
 using std::string;
 static const string WHITTED_STYLE = "basic_1"; // mode for whitted style ray tracing
-
-static const int MAX_BOUNCE = 10; // maximum number of bounces for ray tracing
-static const double DEFAULT_KS = 0.3; //反射系数
-static const double DEFAULT_KR = 1; //折射系数
-static const double INFINITY_LENGTH = 1e10; // infinity value for ray tracing
-static const double EPS = 1e-4; // epsilon value for ray tracing
+static const string PT = "basic_2";
+static const string NEE ="NEE";
+static const int MAX_BOUNCE = 20;                          // maximum number of bounces for ray tracing
+static const int SAMPLE_COUNT = 100;                               // 采样次数
+static const double DEFAULT_KS = 0.3;                      // 反射系数
+static const double DEFAULT_KR = 1;                        // 折射系数
+static const double INFINITY_LENGTH = 1e10;                // infinity value for ray tracing
+static const double EPS = 1e-4;                            // epsilon value for ray tracing
+static const double THROUGHT_CONST = 1.8/(2*3.1415);              // 光线衰减常数
+static const double PI =3.1415926535;
 static const Vector3f ENV_LIGHT = Vector3f(1, 0.75, 0.24); // 环境光
 #endif

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <Vector3f.h>
 #include <math.h>
+#include <random>
 
 #include "parameter.hpp"
 #include "hit.hpp"
@@ -21,7 +22,8 @@ public:
         Ks = ks;
         Kr = kr;
         length = 0;
-        material = new Material(); // 默认折射率为真空
+        material = VOID; // 默认折射率为真空
+        throught = 1;
     }
 
     Ray(const Ray &r)
@@ -32,16 +34,61 @@ public:
         Kr = r.Kr;
         length = r.length;
         material = r.material;
+        throught = r.throught;
     }
     ~Ray() {}
 
+    const void update(const Hit &hit,const float &pdf_hemi,const float &P_RR)
+    {
+
+        std::random_device rd;                          // 用于获取随机数种子
+        std::mt19937 gen(rd());                         // 使用Mersenne Twister引擎
+        std::uniform_real_distribution<> dis(0.0, 1.0); // 均匀分布，范围0.0到1.0
+        double randomValue;
+        // 基础要求2-反射,折射,漫反射三选一
+        randomValue = dis(gen);                                                  // 生成一个0到1之间的随机数
+        if (0 < randomValue && randomValue < hit.getMaterial()->refractiveRatio) // 折射
+            refract(hit);
+        else if (hit.getMaterial()->refractiveRatio < randomValue && randomValue < hit.getMaterial()->refractiveRatio + hit.getMaterial()->reflectiveRatio) // 反射
+            reflect(hit);
+        else // 漫反射
+        {
+            Vector3f randomDir = Vector3f::ZERO;
+            double cosTheta, phi;
+            do
+            {
+                // 球面均匀分布
+                cosTheta = 1 - 2 * dis(gen);
+                phi = 2 * PI * dis(gen);
+                randomDir = Vector3f(cos(phi) * sqrt(1 - cosTheta * cosTheta), sin(phi) * sqrt(1 - cosTheta * cosTheta), cosTheta);
+            } while (Vector3f::dot(randomDir, hit.getNormal()) < 0); // 确保随机方向与法线方向一致
+            diffuseReflect(hit, randomDir);
+
+            auto clamp = [](float x)
+            {
+                return x > 0 ? x : 0;
+            };
+            float cosTheta1 = clamp(Vector3f::dot(direction, hit.getNormal()));
+            float curThrought = THROUGHT_CONST * cosTheta1 / pdf_hemi / P_RR;
+
+            throught *= curThrought;
+        }
+    }
     const void reflect(const Hit &hit)
     {
 
         length += hit.getT();
         origin = pointAtParameter(hit.getT());
         direction = direction - 2 * (hit.getNormal() * direction) * hit.getNormal();
-        Kr *= hit.getMaterial()->getKr(); // 更新反射系数
+        Ks *= hit.getMaterial()->getKs(); // 更新反射系数
+    }
+    const void diffuseReflect(const Hit &hit, Vector3f &randomDir)
+    {
+
+        length += hit.getT();
+        origin = pointAtParameter(hit.getT());
+        direction = randomDir;
+        Ks *= hit.getMaterial()->getKs(); // 更新反射系数
     }
     const void refract(const Hit &hit)
     {
@@ -50,7 +97,7 @@ public:
 
         float n1;
         float n2;
-        float ks;
+        float kr;
 
         if (material == nullptr) // 如果没有材质信息，则默认为真空
             n1 = 1.0f;           // 真空的折射率为1,衰减为0
@@ -58,15 +105,15 @@ public:
             n1 = material->getRefractiveIndex(); // 当前材质的折射率
 
         if (hit.getMaterial() == nullptr) // 如果没有材质信息，则默认为真空
-            n2 = 1.0f, ks = 1;            // 真空的折射率为1,衰减为0
+            n2 = 1.0f, kr = 1;            // 真空的折射率为1,衰减为0
         else
-            n2 = hit.getMaterial()->getRefractiveIndex(), ks = hit.getMaterial()->getKs(); // 目标材质的折射率
+            n2 = hit.getMaterial()->getRefractiveIndex(), kr = hit.getMaterial()->getKs(); // 目标材质的折射率
 
         Vector3f n = hit.getNormal();
         float cosTheta1 = -Vector3f::dot(direction, n);
         if (n1 == n2 || cosTheta1 == 0) // 如果折射率相同或光线垂直于法线，则不折射
         {
-            Ks *= ks; // 更新折射系数
+            Kr *= kr; // 更新折射系数
             return;
         }
         if (cosTheta1 < 0) // 如果光线离开介质（向外为正法向）
@@ -85,7 +132,7 @@ public:
         Vector3f refractedDir = (n1 / n2) * direction + (n1 / n2 * cosTheta1 - cosTheata2) * n;
         direction = refractedDir.normalized();
         material = hit.getMaterial(); // 更新材质信息
-        Ks *= ks;                     // 更新折射系数
+        Kr *= kr;                     // 更新折射系数
     }
 
     const void miss()
@@ -121,7 +168,10 @@ public:
     {
         return material;
     }
-
+    const float getThrought() const
+    {
+        return throught;
+    }
     void setOrigin(const Vector3f &orig)
     {
         origin = orig;
@@ -150,6 +200,10 @@ public:
     {
         material = mat;
     }
+    void setThrought(const float &thr)
+    {
+        throught = thr;
+    }
 
     Vector3f pointAtParameter(float t) const
     {
@@ -163,6 +217,7 @@ private:
     float Ks;           // 反射衰减系数
     float Kr;           // 折射衰减系数
     float length;       // 长度
+    float throught;     // 通量
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Ray &r)

@@ -2,6 +2,7 @@
 #define RENDER_HPP
 
 #include <vecmath.h>
+
 #include "camera.hpp"
 #include "group.hpp"
 #include "hit.hpp"
@@ -20,11 +21,12 @@ public:
     {
         if (mode == WHITTED_STYLE)
             rend_basic_1(u, v);
+        else if (mode == PT)
+            rend_basic_2(u, v);
         else
-        // TODO
-        {
-        }
+            rend_NEE(u, v);
     }
+
     void rend_basic_1(int &u, int &v)
     {
         nowColor = Vector3f::ZERO, finalColor = Vector3f::ZERO;
@@ -43,6 +45,8 @@ public:
                 for (int li = 0; li < sceneParser->getNumLights(); li++)
                 {
                     Light *light = sceneParser->getLight(li);
+                    if(light->isAreaLight())
+                    continue;
                     // 基础要求1.2-shadow ray
                     Ray shadowRay = Ray(camRay.pointAtParameter(hit.getT()), light->getDirection(camRay.pointAtParameter(hit.getT())));
                     Hit shadowHit;
@@ -72,9 +76,178 @@ public:
                 camRay.miss();
             }
         }
-        finalColor += ENV_LIGHT*camRay.getKr()*camRay.getKs()*0.5; // 环境光
+        finalColor += ENV_LIGHT * camRay.getKr() * camRay.getKs() * 0.5; // 环境光
     }
 
+    void rend_basic_2(int &u, int &v)
+    {
+        Vector3f result = Vector3f::ZERO;
+        finalColor = Vector3f::ZERO;
+        Group *baseGroup = sceneParser->getGroup();
+
+        auto clamp = [](float x)
+        {
+            return x > 0 ? x : 0;
+        };
+        for (int li = 0; li < sceneParser->getNumLights(); li++)
+        {
+            Ray camRay = camera->generateRay(Vector2f(u, v));
+            nowColor = Vector3f::ZERO;
+            result = Vector3f::ZERO;
+
+            Hit hit;
+            Light *light = sceneParser->getLight(li);
+            if (!light->isAreaLight())
+                continue; // Area light参与路径追踪
+            float throught = 1;
+            float curThrought = 1;
+
+            float P_RR = 1;
+            std::random_device rd;                          // 用于获取随机数种子
+            std::mt19937 gen(rd());                         // 使用Mersenne Twister引擎
+            std::uniform_real_distribution<> dis(0.0, 1.0); // 均匀分布，范围0.0到1.0
+            double ksi = dis(gen);                          // 生成随机数
+            float pdf_hemi = 1 / (2 * PI);
+            for (int bounce = 0; bounce < MAX_BOUNCE; P_RR =  camRay.getThrought(), bounce++)
+            {
+                if (ksi > P_RR)
+                {
+                    result = Vector3f::ZERO;
+                    break;
+                }
+                ksi = dis(gen);
+                hit.resetRemainMaterial();
+                bool isIntersect = baseGroup->intersect(camRay, hit, EPS);
+                Hit lightHit;
+                bool isLightIntersect = light->intersect(camRay, lightHit, EPS);
+
+                if (!isIntersect)
+                {
+                    if (isLightIntersect)
+                    {
+                        nowColor = light->getColor();
+                        //curThrought = THROUGHT_CONST * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
+                        //result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() * curThrought / pdf_hemi / P_RR;
+                        result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() / pdf_hemi / P_RR;
+                        
+                        result *= light->getMaterial()->getIntensity();
+                        break;
+                    }
+                    result = Vector3f::ZERO;
+                    break;
+                }
+                else
+                {
+                    if (isLightIntersect) // 光线与光源相交
+                    {
+                        if (lightHit.getT() < hit.getT())
+                        {
+                            nowColor = light->getColor();
+                            //curThrought = THROUGHT_CONST * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
+                            //result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() * curThrought / pdf_hemi / P_RR;
+                            result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() / pdf_hemi / P_RR;
+                            result *= light->getMaterial()->getIntensity();
+                            break;
+                        }
+                    }
+
+                    camRay.update(hit, pdf_hemi, P_RR); // 更新光线
+
+                    nowColor = hit.getMaterial()->getDiffuseColor();
+                    result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought(); // 计算光线衰减
+                }
+            }
+            finalColor += result;
+        }
+    }
+
+    void rend_NEE(int &u, int &v)
+    {
+        Vector3f result = Vector3f::ZERO;
+        finalColor = Vector3f::ZERO;
+        Group *baseGroup = sceneParser->getGroup();
+
+        auto clamp = [](float x)
+        {
+            return x > 0 ? x : 0;
+        };
+        for (int li = 0; li < sceneParser->getNumLights(); li++)
+        {
+            Ray camRay = camera->generateRay(Vector2f(u, v));
+            nowColor = Vector3f::ZERO;
+            result = Vector3f::ZERO;
+
+            Hit hit;
+            Light *light = sceneParser->getLight(li);
+            if (!light->isAreaLight())
+                continue; // Area light参与路径追踪
+            float curThrought = 1;
+            Vector3f L_dir = Vector3f::ZERO;
+            float P_RR = 1;
+            std::random_device rd;                          // 用于获取随机数种子
+            std::mt19937 gen(rd());                         // 使用Mersenne Twister引擎
+            std::uniform_real_distribution<> dis(0.0, 1.0); // 均匀分布，范围0.0到1.0
+            double ksi;                                     // 生成随机数
+            double pdf_hemi = 1 / (2 * PI);
+            double pdf_light = 1 / light->getArea();
+            for (int bounce = 0; bounce < MAX_BOUNCE; bounce++)
+            {
+                L_dir = Vector3f::ZERO;
+                P_RR = camRay.getThrought() * camRay.getKs() * camRay.getKr();
+                ksi = dis(gen);
+                if (ksi > P_RR)
+                    break;
+
+                hit.resetRemainMaterial();
+                bool isIntersect = baseGroup->intersect(camRay, hit, EPS);
+                Hit lightHit;
+                bool isLightIntersect = light->intersect(camRay, lightHit, EPS);
+
+                if (!isIntersect)
+                {
+                    if (isLightIntersect) // 光线与光源相交
+                    {
+                        nowColor = light->getColor();
+                        curThrought = THROUGHT_CONST * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
+                        result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() * curThrought * light->getMaterial()->getIntensity() / pdf_hemi / P_RR;
+                    }
+                    break;
+                }
+                else
+                {
+                    if (isLightIntersect) // 光线与光源相交
+                    {
+                        if (lightHit.getT() < hit.getT())
+                        {
+                            nowColor = light->getColor();
+                            curThrought = THROUGHT_CONST * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
+                            result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() * curThrought * light->getMaterial()->getIntensity() / pdf_hemi / P_RR;
+                            break;
+                        }
+                    }
+                    nowColor = hit.getMaterial()->getDiffuseColor();
+                    Vector3f sample = light->getSample();
+
+                    curThrought = camRay.getThrought();
+                    camRay.update(hit, pdf_hemi, P_RR); // 更新光线
+
+                    Ray lightRay = Ray(camRay.pointAtParameter(hit.getT()), light->getDirection(camRay.pointAtParameter(hit.getT())));
+                    Hit shadowHit;
+                    baseGroup->intersect(lightRay, shadowHit, EPS);
+                    if ((camRay.pointAtParameter(hit.getT()) - sample).length() < shadowHit.getT())
+                    {
+                        float cosTheta1 = clamp(Vector3f::dot(camRay.getDirection(), hit.getNormal()));
+                        float cosTheta2 = clamp(Vector3f::dot(light->getNormal(), (camRay.pointAtParameter(hit.getT()) - sample).normalized()));
+                        float coeff = cosTheta2 * THROUGHT_CONST / (camRay.pointAtParameter(hit.getT()) - sample).squaredLength();
+                        L_dir = nowColor * light->getMaterial()->getIntensity() * curThrought * cosTheta1 * coeff / pdf_light;
+                    }
+                    result += L_dir + nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought(); // 计算最终颜色
+                }
+            }
+
+            finalColor += result;
+        }
+    }
     Vector3f getFinalColor() const
     {
         return finalColor;

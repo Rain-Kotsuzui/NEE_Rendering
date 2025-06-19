@@ -165,7 +165,9 @@ void SceneParser::parseLights() {
             lights[count] = parseDirectionalLight();
         } else if (strcmp(token, "PointLight") == 0) {
             lights[count] = parsePointLight();
-        } else {
+        } else if(strcmp(token,"AreaLight")==0){
+            lights[count] = parseAreaLight();
+        }else {
             printf("Unknown token in parseLight: '%s'\n", token);
             exit(0);
         }
@@ -204,6 +206,50 @@ Light *SceneParser::parsePointLight() {
     assert (!strcmp(token, "}"));
     return new PointLight(position, color);
 }
+
+
+Light *SceneParser::parseAreaLight() {
+    char token[MAX_PARSER_TOKEN_LENGTH];
+    char filename[MAX_PARSER_TOKEN_LENGTH];
+    float intensity = 1.0f;
+    Vector3f color,normal;
+    float area;
+
+    getToken(token);
+    assert (!strcmp(token, "{"));
+
+    getToken(token);
+    assert (!strcmp(token, "intensity"));
+    intensity = readFloat();
+
+    getToken(token);
+    assert (!strcmp(token, "obj_file"));
+    getToken(filename);
+    const char *ext = &filename[strlen(filename) - 4];
+    assert(!strcmp(ext, ".obj"));
+
+    getToken(token);
+    assert (!strcmp(token, "color"));
+    color = readVector3f();
+
+    getToken(token);
+    assert (!strcmp(token, "normal"));
+    normal = readVector3f();
+    
+    getToken(token);
+    assert (!strcmp(token, "area"));
+    area = readFloat();
+
+    getToken(token);
+    assert (!strcmp(token, "}"));
+    Material *material = new Material(intensity);
+    Mesh *answer = new Mesh(filename,material);
+        
+    Light *areaLight = new AreaLight(answer, material,color,normal,area);
+    
+    return areaLight;
+
+}
 // ====================================================================
 // ====================================================================
 
@@ -241,11 +287,17 @@ Material *SceneParser::parseMaterial() {
     Vector3f diffuseColor(1, 1, 1), specularColor(0, 0, 0);
     float shininess = 0;
     float refractiveIndex = 1.0f; // 默认真空折射率
+    //基础要求1
     bool isReflective = true;
     bool isRefractive = false; // 默认为非折射材质
-    float Kr = DEFAULT_KR; // 反射衰减系数
-    float Ks = DEFAULT_KS; // 折射衰减系数
+    //基础要求2
+    float refractiveRatio = 0.0f; // 折射占比
+    float reflectiveRatio = 0.0f; // 反射占比
+    float difusseReflectiveRatio = 1.0f; // 漫反射占比
 
+    float Kr = DEFAULT_KR; // 折射衰减系数
+    float Ks = DEFAULT_KS; // 反射衰减系数
+    
     getToken(token);
     assert (!strcmp(token, "{"));
     while (true) {
@@ -264,6 +316,10 @@ Material *SceneParser::parseMaterial() {
         }else if(strcmp(token,"Refractive")==0){
             isRefractive = true;
             refractiveIndex = readFloat();
+        }else if(strcmp(token, "refractiveRatio") == 0) {
+            refractiveRatio = readFloat();
+        }else if(strcmp(token, "reflectiveRatio") == 0){
+            reflectiveRatio = readFloat();
         }else if(strcmp(token, "Kr") == 0) {
             Kr = readFloat();
         } else if (strcmp(token, "Ks") == 0) {
@@ -274,7 +330,9 @@ Material *SceneParser::parseMaterial() {
             break;
         }
     }
-    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective,isRefractive,refractiveIndex,Kr,Ks);
+    difusseReflectiveRatio = 1 - refractiveRatio - reflectiveRatio; // 漫反射占比
+    auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective,isRefractive,refractiveIndex,Kr,Ks,
+                                reflectiveRatio, refractiveRatio, difusseReflectiveRatio);
     return answer;
 }
 
