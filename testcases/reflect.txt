@@ -30,11 +30,11 @@ Lights {
     }
     PointLight {
         position 0.0 2.9 0
-        color 0.9 0.9 0.9 
+        color 0.5 0.5 0.5 
     }
     PointLight {
         position -1 -2.9 2
-        color 0.1 0.1 0.1
+        color 0.3 0.3 0.3
     }
     
 }
@@ -44,73 +44,44 @@ Background {
 }
 
 Materials {
-    numMaterials 9
+    numMaterials 6
     
     Material { diffuseColor 1 1 1 
-    isReflective 1
     reflectiveRatio 0.01
     Kr 0.8
     refractiveRatio 0
     }
     Material { diffuseColor 1 0 0 
-    isReflective 0
     reflectiveRatio 0.01
     Ks 0.5
     refractiveRatio 0
     }
     Material { diffuseColor 0 1 0 
-    isReflective 0
     Ks 0.5
     reflectiveRatio 0.01
     refractiveRatio 0
     }
-    
-    Material { diffuseColor 0.1 0 0 
-    Refractive 1.4
-    Ks 1
-    reflectiveRatio 0
-    refractiveRatio 1
-    }
-    Material { diffuseColor 0.1 0.1 0.8 
-    Kr 0.8
-    Refractive 2
-    reflectiveRatio 0
-    refractiveRatio 1
-    }
-
-    
-                         Material { diffuseColor 0 0 0 isReflective 1 Kr 0.8 
-    
-      reflectiveRatio 1
-      refractiveRatio 0}
-    
-    Material { diffuseColor 1 0 0 
-    specularColor 1 1 1
-    shininess 20
-    isReflective 0
-    reflectiveRatio 0
-    refractiveRatio 0
-    Kr 0.7
-    }
-
-                Material { diffuseColor 0 0 0 
-    isReflective 1
-    Kr 0.8
-    Ks 0.8
-    reflectiveRatio 1
-    refractiveRatio 0
-    }
-
     Material { diffuseColor 0.1 0 0.8 
-    isReflective 0
     reflectiveRatio 0.01
     Ks 0.5
+    refractiveRatio 0
+    }
+
+            Material { diffuseColor 1 1 1 
+    reflectiveRatio 1
+    Ks 1
+    refractiveRatio 0
+    }
+
+     Material { diffuseColor 0 1 1 
+    reflectiveRatio 0.01
+    Kr 0.8
     refractiveRatio 0
     }
 }
 
 Group {
-    numObjects 6
+    numObjects 2
     Group {
     numObjects 6
     MaterialIndex 0
@@ -118,7 +89,7 @@ Group {
     normal 0 1 0
         offset -3
     }
-    MaterialIndex 0
+    MaterialIndex 5
     Plane {
     normal 0 -1 0
         offset -3
@@ -138,47 +109,17 @@ Group {
     normal -1 0 0
         offset -3
     } 
-    MaterialIndex 8
+    MaterialIndex 3
     Plane {
     normal 0 0 -1
         offset -9
     } 
     }
 
-    
-    MaterialIndex 3
-    Transform {
-        Translate 1.6 -2 1.5
-        YRotate -20
-        Scale 1 1 1
-        TriangleMesh {
-             obj_file mesh/cube.obj
-        }
-    }
     MaterialIndex 4
-    Transform {
-        Translate -1.4 -1 -1
-        YRotate 30
-        Scale 1 2 1
-        TriangleMesh {
-             obj_file mesh/cube.obj
-        }
-    }
-    
-    MaterialIndex 5
     Sphere {
-        center 1 1 1
-        radius 1
-    }
-    MaterialIndex 6
-    Sphere {
-        center 1.6 -1.6 -1.6
-        radius 1.4
-    }
-    MaterialIndex 7
-    Sphere {
-        center -1.6 -2.3 1.6
-        radius 0.7
+        center 0 -1 0
+        radius 2
     }
     
 }

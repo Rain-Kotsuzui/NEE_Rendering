@@ -7,8 +7,8 @@
         "program": "${workspaceFolder}/build/final",
         "args": [
             "testcases/cornellbox_2.txt",
-            "output/basic_2.bmp",
-            "basic_2"
+            "output/t.bmp",
+            "basic_1"
         ],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",

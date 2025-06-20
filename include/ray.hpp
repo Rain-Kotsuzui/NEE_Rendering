@@ -40,6 +40,9 @@ public:
 
     const void update(const Hit &hit,const float &pdf_hemi,const float &P_RR)
     {
+        Vector3f wi=direction;
+        Vector3f wo;
+        Vector3f fr;//BRDF计算
 
         std::random_device rd;                          // 用于获取随机数种子
         std::mt19937 gen(rd());                         // 使用Mersenne Twister引擎
@@ -68,10 +71,18 @@ public:
             {
                 return x > 0 ? x : 0;
             };
+            
             float cosTheta1 = clamp(Vector3f::dot(direction, hit.getNormal()));
-            float curThrought = THROUGHT_CONST * cosTheta1 / pdf_hemi / P_RR;
+//wrong but cool
 
-            throught *= curThrought;
+            float curThrought_wrong = THROUGHT_CONST * cosTheta1 / pdf_hemi / P_RR;
+            throught_wrong *=curThrought_wrong;
+            
+//
+            wo = direction;
+            //fr=hit.getMaterial()->sample_f(wi,wo,hit.getNormal());//brdf
+            fr=hit.getMaterial()->getDiffuseColor()/PI;
+            throught = throught*fr*cosTheta1/pdf_hemi/P_RR;
         }
     }
     const void reflect(const Hit &hit)
@@ -79,8 +90,10 @@ public:
 
         length += hit.getT();
         origin = pointAtParameter(hit.getT());
-        direction = direction - 2 * (hit.getNormal() * direction) * hit.getNormal();
+        direction = direction - 2 * (Vector3f::dot(hit.getNormal(),direction)) * hit.getNormal();
         Ks *= hit.getMaterial()->getKs(); // 更新反射系数
+
+        throught *=hit.getMaterial()->getKs();
     }
     const void diffuseReflect(const Hit &hit, Vector3f &randomDir)
     {
@@ -88,7 +101,9 @@ public:
         length += hit.getT();
         origin = pointAtParameter(hit.getT());
         direction = randomDir;
-        Ks *= hit.getMaterial()->getKs(); // 更新反射系数
+        Ks *=hit.getMaterial()->getKs();
+
+        throught = throught*Ks;
     }
     const void refract(const Hit &hit)
     {
@@ -99,15 +114,8 @@ public:
         float n2;
         float kr;
 
-        if (material == nullptr) // 如果没有材质信息，则默认为真空
-            n1 = 1.0f;           // 真空的折射率为1,衰减为0
-        else
             n1 = material->getRefractiveIndex(); // 当前材质的折射率
-
-        if (hit.getMaterial() == nullptr) // 如果没有材质信息，则默认为真空
-            n2 = 1.0f, kr = 1;            // 真空的折射率为1,衰减为0
-        else
-            n2 = hit.getMaterial()->getRefractiveIndex(), kr = hit.getMaterial()->getKs(); // 目标材质的折射率
+            n2 = hit.getMaterial()->getRefractiveIndex(), kr = hit.getMaterial()->getKr(); // 目标材质的折射率
 
         Vector3f n = hit.getNormal();
         float cosTheta1 = -Vector3f::dot(direction, n);
@@ -133,6 +141,8 @@ public:
         direction = refractedDir.normalized();
         material = hit.getMaterial(); // 更新材质信息
         Kr *= kr;                     // 更新折射系数
+
+        throught = throught*Kr;
     }
 
     const void miss()
@@ -168,9 +178,13 @@ public:
     {
         return material;
     }
-    const float getThrought() const
+    const Vector3f getThrought() const
     {
         return throught;
+    }
+    const float getThrought_wrong() const
+    {
+        return throught_wrong;
     }
     void setOrigin(const Vector3f &orig)
     {
@@ -217,7 +231,8 @@ private:
     float Ks;           // 反射衰减系数
     float Kr;           // 折射衰减系数
     float length;       // 长度
-    float throught;     // 通量
+    Vector3f throught;     // RGB各通量
+    float throught_wrong;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Ray &r)

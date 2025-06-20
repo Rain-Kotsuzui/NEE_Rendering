@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <omp.h>
 
 #include "camera.hpp"
 #include "group.hpp"
@@ -43,29 +44,37 @@ int main(int argc, char *argv[])
   SceneParser sceneParser = SceneParser(inputFile.c_str());
   Camera *camera = sceneParser.getCamera();
 
-  Render render(mode, &sceneParser, camera);
   Image renderedImg(camera->getWidth(), camera->getHeight());
   // Then loop over each pixel in the image, shooting a ray
 
   Timer timer(camera->getWidth() * camera->getHeight()); // 计时器
 
-  for (int u = 0; u < camera->getWidth(); u++)
+//OpenMP并行加速
+  int numP = 4;
+  omp_set_num_threads(numP);
   {
-    for (int v = 0; v < camera->getHeight(); v++)
+#pragma omp parallel for
+for(int index=0;index<camera->getWidth()*camera->getHeight();index++)
+    //for (int u = 0; u < camera->getWidth(); u++)
     {
-      Vector3f color = Vector3f::ZERO;
-      for (int i = 0; i < SAMPLE_COUNT; i++)
-      {
-        render.rend(u, v);
-        color += render.getFinalColor();
-      } 
-      timer.update();
-      color = color*(1.0/SAMPLE_COUNT); // 平均采样
-      renderedImg.SetPixel(u, v, color);
-    }
+      //for (int v = 0; v < camera->getHeight(); v++)
+      //{
+      int u= index % camera->getWidth();
+      int v= index / camera->getWidth();
+        Vector3f color = Vector3f::ZERO;
+        for (int i = 0; i < SAMPLE_COUNT; i++)
+        {
+          Render render(mode, &sceneParser, camera);
+          render.rend(u, v);
+          color += render.getFinalColor();
+        }
+        timer.update();
+        color = color * (1.0 / SAMPLE_COUNT); // 平均采样
+        renderedImg.SetPixel(u, v, color);
+      }
+   // }
   }
-
   renderedImg.SaveImage(outputFile.c_str());
-  std::cout << timer.getTime() << " seconds cost";
+  std::cout << numP << " threads, " << timer.getTime() << " seconds cost";
   return 0;
 }

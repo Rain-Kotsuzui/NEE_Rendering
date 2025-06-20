@@ -55,7 +55,7 @@ public:
 	Vector2f homogenized() const;
 
 	void negate();
-
+    float max()const;
 	// ---- Utility ----
     operator const float* () const; // automatic type conversion for OpenGL
     operator float* (); // automatic type conversion for OpenGL 

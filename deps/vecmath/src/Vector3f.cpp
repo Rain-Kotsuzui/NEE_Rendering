@@ -1,7 +1,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-
+#include <algorithm>
 #include "Vector3f.h"
 #include "Vector2f.h"
 
@@ -21,6 +21,9 @@ const Vector3f Vector3f::RIGHT = Vector3f( 1, 0, 0 );
 // static
 const Vector3f Vector3f::FORWARD = Vector3f( 0, 0, -1 );
 
+float Vector3f::max() const {
+	return std::max(std::max(x(),y()),z());
+}
 Vector3f::Vector3f( float f )
 {
     m_elements[0] = f;
