@@ -4,8 +4,10 @@ PerspectiveCamera {
     direction 0 0 -1
     up 0 1 0
     angle 30
-    width 400
-    height 400
+    width 200
+    height 200
+    focus 1
+    lens 0
 }
 
 Lights {
@@ -25,14 +27,15 @@ Materials {
     Material { diffuseColor 1 0 0 
       specularColor 1 0 0
       shininess 20
-      isReflective 1
+      Refractive 2
+      isReflective 0
       Ks 1
       
     }
     Material { diffuseColor 0 1 0 
       specularColor 0 1 0
       shininess 20
-      isReflective 1
+      isReflective 0
     }
 }
 

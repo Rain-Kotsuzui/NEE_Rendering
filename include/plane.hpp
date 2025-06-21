@@ -38,6 +38,7 @@ public:
     }
     void printInfo() override {}
 
+    Object3D *getObj()const override{ return nullptr;}
 protected:
     Vector3f normal;
     float d;

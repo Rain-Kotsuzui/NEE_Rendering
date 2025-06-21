@@ -26,7 +26,7 @@ public:
     // Intersect Ray with this object. If hit, store information in hit structure.
     virtual bool intersect(const Ray &r, Hit &h, float tmin) = 0;
     virtual void printInfo() = 0;
-
+    virtual Object3D *getObj()const =0;
 protected:
     Material *material;
 };

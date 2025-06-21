@@ -296,10 +296,13 @@ Material *SceneParser::parseMaterial() {
     //基础要求1
     bool isReflective = true;
     bool isRefractive = false; // 默认为非折射材质
+    bool isFresnel =false;
+    
     //基础要求2
     float refractiveRatio = 0.0f; // 折射占比
     float reflectiveRatio = 0.0f; // 反射占比
     float difusseReflectiveRatio = 1.0f; // 漫反射占比
+    float fresnelRatio=0;
 
     float Kr = DEFAULT_KR; // 折射衰减系数
     float Ks = DEFAULT_KS; // 反射衰减系数
@@ -330,6 +333,9 @@ Material *SceneParser::parseMaterial() {
             Kr = readFloat();
         } else if (strcmp(token, "Ks") == 0) {
             Ks = readFloat();
+        } else if (strcmp(token, "fresnel") == 0) {
+            isFresnel =true;
+            fresnelRatio = readFloat();
         }
         else {
             assert (!strcmp(token, "}"));
@@ -338,7 +344,7 @@ Material *SceneParser::parseMaterial() {
     }
     difusseReflectiveRatio = 1 - refractiveRatio - reflectiveRatio; // 漫反射占比
     auto *answer = new Material(diffuseColor, specularColor, shininess,isReflective,isRefractive,refractiveIndex,Kr,Ks,
-                                reflectiveRatio, refractiveRatio, difusseReflectiveRatio);
+                                reflectiveRatio, refractiveRatio, difusseReflectiveRatio,isFresnel,fresnelRatio);
     return answer;
 }
 

@@ -42,6 +42,7 @@ public:
             Vector3f nowColor = Vector3f::ZERO;
             if (isIntersect)
             {
+
                 for (int li = 0; li < sceneParser->getNumLights(); li++)
                 {
                     Light *light = sceneParser->getLight(li);
@@ -61,17 +62,22 @@ public:
                 finalColor += nowColor * camRay.getKs() * camRay.getKr();
 
                 // 基础要求1.1-反射与折射二选一
-                camRay.update(hit,1/(2*PI),1);
+                if (hit.getMaterial()->isReflective)
+                    camRay.reflect(hit);
+                else if (hit.getMaterial()->isRefractive)
+                    camRay.refract(hit);
+                else
+                        camRay.miss();
             }
             else
             {
                 nowColor = sceneParser->getBackgroundColor();
 
-                finalColor += nowColor * camRay.getKs() * camRay.getKr();
+                finalColor =nowColor * camRay.getKs() * camRay.getKr();
                 camRay.miss();
             }
         }
-        finalColor += ENV_LIGHT * camRay.getKr() * camRay.getKs() * 0.5; // 环境光
+        finalColor += ENV_LIGHT * camRay.getKr() * camRay.getKs() * ENV_LIGHT_INTENSITY; // 环境光
     }
     /*WRONG!!!!!
         void rend_basic_2(int &u, int &v)
@@ -209,11 +215,11 @@ public:
                         Vector3f fr = nowColor;
                         // curThrought = THROUGHT_CONST * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
                         // result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() * curThrought / pdf_hemi / P_RR;
-                        result = fr * camRay.getThrought()*clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection())) / pdf_hemi / P_RR;
+                        result = fr * camRay.getThrought() * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection())) / pdf_hemi / P_RR;
                         result *= light->getMaterial()->getIntensity();
                         break;
                     }
-                    result *=0;
+                    result *= 0;
                     break;
                 }
                 else
@@ -226,7 +232,7 @@ public:
                             Vector3f fr = nowColor;
                             // curThrought = THROUGHT_CONST * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
                             // result += nowColor * camRay.getKs() * camRay.getKr() * camRay.getThrought() * curThrought / pdf_hemi / P_RR;
-                            result = fr * camRay.getThrought()*clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection())) / pdf_hemi / P_RR;
+                            result = fr * camRay.getThrought() * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection())) / pdf_hemi / P_RR;
                             result *= light->getMaterial()->getIntensity();
                             break;
                         }
@@ -239,7 +245,7 @@ public:
             finalColor += result;
         }
     }
-    
+
     void rend_NEE(int &u, int &v)
     {
         Vector3f result = Vector3f::ZERO;
@@ -288,8 +294,8 @@ public:
                     if (isLightIntersect) // 光线与光源相交
                     {
                         nowColor = light->getColor();
-                        fr =nowColor*clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
-                        result += fr*camRay.getThrought() * light->getMaterial()->getIntensity() /pdf_light;
+                        fr = nowColor * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
+                        result += fr * camRay.getThrought() * light->getMaterial()->getIntensity() / pdf_light;
                     }
                     break;
                 }
@@ -300,29 +306,25 @@ public:
                         if (lightHit.getT() < hit.getT())
                         {
                             nowColor = light->getColor();
-                            fr =nowColor*clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
-                            result += fr*camRay.getThrought() * light->getMaterial()->getIntensity() /pdf_light;
+                            fr = nowColor * clamp(-Vector3f::dot(light->getNormal(), camRay.getDirection()));
+                            result += fr * camRay.getThrought() * light->getMaterial()->getIntensity() / pdf_light;
                             break;
                         }
                     }
-                    nowColor = hit.getMaterial()->getDiffuseColor();
-                    //TODO brdf
-                    fr =nowColor/PI;
-
                     Vector3f sample = light->getSample();
 
                     curThrought = camRay.getThrought();
-                    camRay.update(hit, pdf_hemi, P_RR); // 更新光线
+                    camRay.update(hit, pdf_hemi, P_RR,sample); // 更新光线
 
-                    Ray lightRay = Ray(camRay.pointAtParameter(hit.getT()), (sample - camRay.pointAtParameter(hit.getT())).normalized());
+                    Ray lightRay = Ray(camRay.getOrigin(), (sample - camRay.getOrigin()).normalized());
                     Hit shadowHit;
                     baseGroup->intersect(lightRay, shadowHit, EPS);
-                    if ((camRay.pointAtParameter(hit.getT()) - sample).length() < shadowHit.getT())
+                    if ((camRay.getOrigin() - sample).length() < shadowHit.getT())
                     {
                         float cosTheta2 = clamp(Vector3f::dot(light->getNormal(), -lightRay.getDirection()));
                         float cosTheta1 = clamp(Vector3f::dot(hit.getNormal(), lightRay.getDirection()));
-                        float coeff = cosTheta2  / (camRay.pointAtParameter(hit.getT()) - sample).squaredLength();
-                        L_dir = fr* light->getMaterial()->getIntensity() * curThrought * cosTheta1 * coeff / pdf_light;
+                        float coeff = cosTheta2 / (camRay.getOrigin() - sample).squaredLength();
+                        L_dir = camRay.getLdirFr()* light->getMaterial()->getIntensity() * curThrought * cosTheta1 * coeff / pdf_light;
                     }
                     result += L_dir; // 计算最终颜色
                 }

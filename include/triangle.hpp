@@ -35,6 +35,8 @@ public:
 		return false;
 	}
 	void printInfo() override {}
+	
+    Object3D *getObj()const override{ return nullptr;}
 	Vector3f normal;
 	Vector3f vertices[3];
 

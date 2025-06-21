@@ -3,9 +3,9 @@ PerspectiveCamera {
     center 0 0 8
     direction 0 -0.01 -1
     up 0 1 0
-    angle 65
-    width 200
-    height 200
+    angle 60
+    width 1024
+    height 1024
     focus 1
     lens 0
 }
@@ -22,9 +22,9 @@ Lights {
     }
     
     AreaLight {
-        intensity 10
+        intensity 1
         obj_file mesh/light2.obj
-        color 1 0 0
+        color 1 1 1
         normal 0 0 -1
         area 36
     }
@@ -33,8 +33,8 @@ Lights {
         color 0.9 0.9 0.9 
     }
     PointLight {
-        position -1 -2.9 2
-        color 0.1 0.1 0.1
+        position -1 0 6
+        color 0.6 0.6 0.6
     }
     
 }
@@ -47,7 +47,7 @@ Materials {
     numMaterials 9
     
     Material { diffuseColor 1 1 1 
-    isReflective 1
+    isReflective 0
     reflectiveRatio 0.01
     Kr 0.8
     refractiveRatio 0
@@ -65,21 +65,23 @@ Materials {
     refractiveRatio 0
     }
     
-    Material { diffuseColor 0.1 0 0 
-    Refractive 1.4
-    Ks 1
-    reflectiveRatio 0
-    refractiveRatio 1
-    }
-    Material { diffuseColor 0.1 0.1 0.8 
-    Kr 0.8
-    Refractive 2
+    Material { diffuseColor 0.5 0.5 0 
+    Refractive 1.3
+    isReflective 0
+    Kr 1
     reflectiveRatio 0
     refractiveRatio 1
     }
 
+    Material { diffuseColor 0.1 0.1 1
+    Kr 0.8
+    isReflective 0
+    reflectiveRatio 0.2
+    refractiveRatio 0
+    }
+
     
-                         Material { diffuseColor 0 0 0 isReflective 1 Kr 0.8 
+                         Material { diffuseColor 1 1 1 isReflective 1 Kr 0.8 
     
       reflectiveRatio 1
       refractiveRatio 0}
@@ -93,12 +95,13 @@ Materials {
     Kr 0.7
     }
 
-                Material { diffuseColor 0 0 0 
-    isReflective 1
+                Material { diffuseColor 0 0 0.1 
+    Refractive 2
+    isReflective 0
     Kr 0.8
-    Ks 0.8
-    reflectiveRatio 1
-    refractiveRatio 0
+    
+    reflectiveRatio 0
+    refractiveRatio 1
     }
 
     Material { diffuseColor 0.1 0 0.8 
@@ -110,9 +113,8 @@ Materials {
 }
 
 Group {
-    numObjects 6
-    Group {
-    numObjects 6
+    numObjects 11
+    
     MaterialIndex 0
     Plane {
     normal 0 1 0
@@ -143,7 +145,7 @@ Group {
     normal 0 0 -1
         offset -9
     } 
-    }
+    
 
     
     MaterialIndex 3
@@ -167,7 +169,7 @@ Group {
     
     MaterialIndex 5
     Sphere {
-        center 1 1 1
+        center 1 1 2
         radius 1
     }
     MaterialIndex 6
@@ -177,7 +179,7 @@ Group {
     }
     MaterialIndex 7
     Sphere {
-        center -1.6 -2.3 1.6
+        center -1.6 -2.3 2
         radius 0.7
     }
     

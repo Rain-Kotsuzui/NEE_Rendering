@@ -30,7 +30,7 @@ public:
         Material *hitMaterial = h.getMaterial();
         for (auto obj : objectList)
             result |= obj->intersect(r, h, tmin);
-        if (result&&h.getMaterial()->isRefractive&&hitMaterial == h.getMaterial())
+        if (result && h.getMaterial()->isRefractive && hitMaterial == h.getMaterial())
             h.setMaterial(VOID); // 折射出射
         return result;
     }
@@ -40,8 +40,10 @@ public:
         Material *hitMaterial = h.getMaterial();
         for (auto obj : objectList)
         {
-            
-            if(obj->getMaterial()==nullptr||obj->getMaterial()->isRefractive) // 如果材质是折射材质，则不计算阴影
+            Object3D *temp=obj;
+            while(temp->getObj()!=nullptr)
+                temp = temp->getObj();
+            if( temp->getMaterial()->isRefractive) // 如果材质是折射材质，则不计算阴影
                 continue;
             result |= obj->intersect(r, h, tmin);
         }
@@ -65,6 +67,8 @@ public:
             objectList[i]->printInfo();
         }
     }
+    
+    Object3D *getObj()const override{ }
 
 private:
     std::vector<Object3D *> objectList;

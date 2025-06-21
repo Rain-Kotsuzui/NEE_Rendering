@@ -17,7 +17,7 @@ Lights {
     AreaLight {
         intensity 2
         obj_file mesh/cube.obj
-         
+        
     }
 }
 

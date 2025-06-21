@@ -28,6 +28,8 @@ public:
     bool intersect(const Ray &r, Hit &h, float tmin) override;
     Vector3f getCenter();
     void printInfo()override{}
+    
+    Object3D *getObj()const override{return nullptr; }
 private:
 
     // Normal can be used for light estimation

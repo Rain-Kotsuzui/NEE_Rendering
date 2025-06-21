@@ -126,7 +126,7 @@ public:
     const bool isShadowed(const float &T, const Vector3f &p) const override
     {
         // 光线在无穷远处
-        return false;
+        return true;
     }
 
     bool intersect(const Ray &r, Hit &h, float tmin) const override {};
