@@ -335,7 +335,7 @@ private:
         std::uniform_real_distribution<> dis1(0.0, 1.0); // 均匀分布，范围0.0到1.0
         double t;
         float T = hit.getT();
-        float pdf_L = 1 / T;
+        float pdf_L = 1 / T; // 蒙特卡洛积分
         for (int count = 0; count < VOLLIGHT_SAMPLE_COUNT; count++)
         {
             t = dis1(gen1) * T;

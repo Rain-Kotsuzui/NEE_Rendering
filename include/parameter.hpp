@@ -8,7 +8,7 @@ static const string WHITTED_STYLE = "basic_1"; // mode for whitted style ray tra
 static const string PT = "basic_2";
 static const string NEE ="NEE";
 static const int MAX_BOUNCE = 10;                          // maximum number of bounces for ray tracing
-static const int SAMPLE_COUNT = 100;                               // 采样次数
+static const int SAMPLE_COUNT = 70;                               // 采样次数
 static const int VOLLIGHT_SAMPLE_COUNT = 20;                               // 采样次数
 
 static const double DEFAULT_KS = 0.6;                      // 反射系数

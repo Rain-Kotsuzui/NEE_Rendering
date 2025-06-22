@@ -173,9 +173,11 @@ void SceneParser::parseLights() {
             lights[count] = parsePointLight();
         } else if(strcmp(token,"AreaLight")==0){
             lights[count] = parseAreaLight();
-        }else if(strcmp(token,"VolAreaLight")==0){
+        } else if(strcmp(token,"VolAreaLight")==0){
             lights[count] = parseVolAreaLight();
-        }else {
+        } else if(strcmp(token,"VolPointLight")==0){
+            lights[count] = parseVolPointLight();
+        } else {
             printf("Unknown token in parseLight: '%s'\n", token);
             exit(0);
         }
@@ -306,6 +308,37 @@ Light *SceneParser::parseVolAreaLight() {
     Mesh *answer = new Mesh(filename,material);
         
     Light *areaLight = new VolAreaLight(answer, material,color,normal,area);
+    
+    return areaLight;
+
+}
+Light *SceneParser::parseVolPointLight() {
+    char token[MAX_PARSER_TOKEN_LENGTH];
+    char filename[MAX_PARSER_TOKEN_LENGTH];
+    float intensity = 1.0f;
+    Vector3f color,position;
+
+    getToken(token);
+    assert (!strcmp(token, "{"));
+
+    getToken(token);
+    assert (!strcmp(token, "intensity"));
+    intensity = readFloat();
+
+    getToken(token);
+    assert (!strcmp(token, "color"));
+    color = readVector3f();
+
+    getToken(token);
+    assert (!strcmp(token, "position"));
+    position = readVector3f();
+
+    getToken(token);
+    assert (!strcmp(token, "}"));
+    Material *material = new Material(intensity);
+    Mesh *answer = new Mesh(filename,material);
+        
+    Light *areaLight = new VolPointLight(answer, material,color,position);
     
     return areaLight;
 

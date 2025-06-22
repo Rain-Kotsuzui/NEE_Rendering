@@ -190,6 +190,55 @@ private:
 };
 
 //======================体积光=========================//
+
+class VolPointLight : public Light
+{
+public:
+    VolPointLight() = delete;
+    VolPointLight(Mesh *me, Material *m, Vector3f col = Vector3f(1, 1, 1), Vector3f p=Vector3f::ZERO)
+    {
+        mesh = me;
+        material = m;
+        position = mesh->getCenter(); // 质心
+        color = col;
+        position =p;
+    }
+
+    ~VolPointLight() override = default;
+    const bool isShadowed(const float &T, const Vector3f &p) const override
+    {
+        return false;
+    }
+    const Vector3f getColor() const override { return color; }
+    const Vector3f getDirection(const Vector3f &p) const override
+    {
+        //线性光
+        return (position-p).normalized();
+    }
+    const Vector3f getSample() const override
+    {
+        return position;
+    }
+    const float getArea() const override { }
+    const Material *getMaterial() const override { return material; }
+    const Vector3f getNormal() const override { }
+    void getIllumination(const Vector3f &p, Vector3f &dir, Vector3f &col) const override
+    { // 不会用到
+    }
+    bool intersect(const Ray &r, Hit &h, float tmin) const override
+    {   //非锥状光
+        h.set((r.getOrigin()-position).length(), material, position);
+        return true;
+    }
+    const int typeLight() const override { return 4; }
+
+private:
+    Mesh *mesh;
+    Material *material;
+    Vector3f position;
+    Vector3f color;
+};
+
 class VolAreaLight : public Light
 {
 public:

@@ -4,10 +4,10 @@
         "name": "Debug!!!",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/build3/final",
+        "program": "${workspaceFolder}/build2/final",
         "args": [
-            "testcases/volLight.txt",
-            "output/volLight.bmp",
+            "testcases/focus.txt",
+            "output/focus.bmp",
             "NEE"
         ],
         "stopAtEntry": false,
