@@ -41,11 +41,9 @@ Materials {
     numMaterials 3
     
     Material { diffuseColor 0.4 0.6 0.42
-    fresnel 0
     specularColor 1 1 1
     shininess 20
-    isReflective 0
-    reflectiveRatio 0
+    reflectiveRatio 0.5
     Ks 0.9
     refractiveRatio 0
     }
@@ -60,7 +58,6 @@ Materials {
     }
 
      Material { diffuseColor 1 0.4 0.4
-     fresnel 0
      isReflective 0
     reflectiveRatio 0
     Ks 0.8

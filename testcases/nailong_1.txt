@@ -30,7 +30,7 @@ Lights {
     }
     
     PointLight {
-        position 0.0 2.9 0
+        position 0.0 2.9 5
         color 0.9 0.9 0.9 
     }
     PointLight {
@@ -115,7 +115,7 @@ Materials {
 }
 
 Group {
-    numObjects 11
+    numObjects 7
     
     MaterialIndex 0
     Plane {
@@ -147,42 +147,15 @@ Group {
     normal 0 0 -1
         offset -10
     } 
-    
 
-    
-    MaterialIndex 3
+    MaterialIndex 1
     Transform {
-        Translate 1.6 -2 1.5
-        YRotate -20
-        Scale 1 1 1
+        Translate 0 0 0
+        YRotate 0
+        Scale 5 5 5
         TriangleMesh {
-             obj_file mesh/cube.obj
+             obj_file mesh/nailong.obj
         }
-    }
-    MaterialIndex 4
-    Transform {
-        Translate -1.4 -1 -1
-        YRotate 30
-        Scale 1 2 1
-        TriangleMesh {
-             obj_file mesh/cube.obj
-        }
-    }
-    
-    MaterialIndex 5
-    Sphere {
-        center 1 1 2
-        radius 1
-    }
-    MaterialIndex 6
-    Sphere {
-        center 1.6 -1.6 -1.6
-        radius 1.4
-    }
-    MaterialIndex 7
-    Sphere {
-        center -1.6 -2.3 2
-        radius 0.7
     }
     
 }

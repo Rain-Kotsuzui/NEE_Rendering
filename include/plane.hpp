@@ -30,7 +30,7 @@ public:
         float t = (d-Vector3f::dot(normal,r.getOrigin()))/t1;
         if (t > tmin && t < h.getT())
         {
-            h.set(t, material, normal);
+            h.set(t-0.001, material, normal);
             return true;
         }
         else

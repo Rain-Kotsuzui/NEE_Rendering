@@ -14,8 +14,7 @@
 class Ray
 {
 public:
-    Ray() = delete;
-    Ray(const Vector3f &orig, const Vector3f &dir, double ks = 1, double kr = 1)
+    Ray(const Vector3f &orig=Vector3f::ZERO, const Vector3f &dir=Vector3f::ZERO, double ks = 1, double kr = 1)
     {
         origin = orig;
         direction = dir;
@@ -24,7 +23,9 @@ public:
         length = 0;
         material = VOID; // 默认折射率为真空
         throught = 1;
+        L_dir_fr = Vector3f(1, 1, 1);
     }
+   
 
     Ray(const Ray &r)
     {
@@ -35,13 +36,12 @@ public:
         length = r.length;
         material = r.material;
         throught = r.throught;
+        L_dir_fr = r.L_dir_fr;
     }
     ~Ray() {}
 
-    const void update(const Hit &hit, const float &pdf_hemi = 1, const float &P_RR = 1,const Vector3f &Ln=Vector3f::ZERO)
+    const void update(const Hit &hit, const float &pdf_hemi = 1, const float &P_RR = 1, const Vector3f &sample = 0)
     {
-        Vector3f wi = direction;
-        Vector3f wo;
         Vector3f fr; // BRDF计算
 
         std::random_device rd;                          // 用于获取随机数种子
@@ -64,12 +64,17 @@ public:
         if (0 < randomValue && randomValue < Rr) // 折射
         {
             refract(hit);
-            L_dir_fr=hit.getMaterial()->getDiffuseColor();
+            L_dir_fr = 0;
+            if (sample.length()<0.3||Vector3f::dot(direction, sample) > 1-1e-2)
+                L_dir_fr = hit.getMaterial()->getDiffuseColor();
         }
         else if (Rr < randomValue && randomValue < Rr + Rs) // 反射
         {
+
             reflect(hit);
-            L_dir_fr=hit.getMaterial()->getDiffuseColor();
+            L_dir_fr = 0;
+            if (sample.length()<0.3||Vector3f::dot(direction, sample) > 1-1e-2)
+                L_dir_fr = hit.getMaterial()->getDiffuseColor();
         }
         else // 漫反射
         {
@@ -95,8 +100,6 @@ public:
             float curThrought_wrong = THROUGHT_CONST * cosTheta1 / pdf_hemi / P_RR;
             throught_wrong *= curThrought_wrong;
 
-            //
-            wo = direction;
             // TODO
             // fr=hit.getMaterial()->sample_f(wi,wo,hit.getNormal());//brdf
             fr = hit.getMaterial()->getDiffuseColor() / PI;
@@ -263,7 +266,7 @@ private:
 
 inline std::ostream &operator<<(std::ostream &os, const Ray &r)
 {
-    os << "Ray <" << r.getOrigin() << ", " << r.getDirection() << ">";
+    // os << "Ray <" << r.getOrigin() << ", " << r.getDirection() << ">";
     return os;
 }
 

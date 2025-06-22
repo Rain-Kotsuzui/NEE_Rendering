@@ -36,6 +36,8 @@ public:
         Vector3f R = 2 * Vector3f::dot(n, dirToLight) * n - dirToLight;
         shaded = diffuseColor * clamp(Vector3f::dot(n, dirToLight)) + specularColor * pow(clamp(Vector3f::dot(-ray, R)), shininess);
         shaded = shaded * lightColor;
+        if(isRefractive)
+        shaded=shaded*(Vector3f(1,1,1)-diffuseColor);
         return shaded;
     }
 
@@ -73,5 +75,5 @@ protected:
     float Ks;              // 反射衰减
     float intensity; // 发光强度
 };
-static Material *VOID = new Material(Vector3f::ZERO, Vector3f::ZERO, 0, false, true, 1.0f, 1, 1, 0, 1, 0); // 空材质
+static Material *VOID = new Material(Vector3f(1,1,1), Vector3f(1,1,1), 0, false, true, 1.0f, 1, 1, 0, 1, 0); // 空材质
 #endif                                                                                                     // MATERIAL_H

@@ -4,10 +4,10 @@
         "name": "Debug!!!",
         "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/build/final",
+        "program": "${workspaceFolder}/build3/final",
         "args": [
-            "testcases/cornellbox_2.txt",
-            "output/NEE_3_t.bmp",
+            "testcases/volLight.txt",
+            "output/volLight.bmp",
             "NEE"
         ],
         "stopAtEntry": false,

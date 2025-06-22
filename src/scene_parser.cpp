@@ -173,6 +173,8 @@ void SceneParser::parseLights() {
             lights[count] = parsePointLight();
         } else if(strcmp(token,"AreaLight")==0){
             lights[count] = parseAreaLight();
+        }else if(strcmp(token,"VolAreaLight")==0){
+            lights[count] = parseVolAreaLight();
         }else {
             printf("Unknown token in parseLight: '%s'\n", token);
             exit(0);
@@ -185,9 +187,15 @@ void SceneParser::parseLights() {
 
 Light *SceneParser::parseDirectionalLight() {
     char token[MAX_PARSER_TOKEN_LENGTH];
+    float intensity;
     getToken(token);
     assert (!strcmp(token, "{"));
     getToken(token);
+    
+    assert (!strcmp(token, "intensity"));
+    intensity = readFloat();
+    getToken(token);
+
     assert (!strcmp(token, "direction"));
     Vector3f direction = readVector3f();
     getToken(token);
@@ -195,7 +203,10 @@ Light *SceneParser::parseDirectionalLight() {
     Vector3f color = readVector3f();
     getToken(token);
     assert (!strcmp(token, "}"));
-    return new DirectionalLight(direction, color);
+    
+    Material *material = new Material(intensity);
+
+    return new DirectionalLight(direction, color,material);
 }
 
 Light *SceneParser::parsePointLight() {
@@ -252,6 +263,49 @@ Light *SceneParser::parseAreaLight() {
     Mesh *answer = new Mesh(filename,material);
         
     Light *areaLight = new AreaLight(answer, material,color,normal,area);
+    
+    return areaLight;
+
+}
+
+Light *SceneParser::parseVolAreaLight() {
+    char token[MAX_PARSER_TOKEN_LENGTH];
+    char filename[MAX_PARSER_TOKEN_LENGTH];
+    float intensity = 1.0f;
+    Vector3f color,normal;
+    float area;
+
+    getToken(token);
+    assert (!strcmp(token, "{"));
+
+    getToken(token);
+    assert (!strcmp(token, "intensity"));
+    intensity = readFloat();
+
+    getToken(token);
+    assert (!strcmp(token, "obj_file"));
+    getToken(filename);
+    const char *ext = &filename[strlen(filename) - 4];
+    assert(!strcmp(ext, ".obj"));
+
+    getToken(token);
+    assert (!strcmp(token, "color"));
+    color = readVector3f();
+
+    getToken(token);
+    assert (!strcmp(token, "normal"));
+    normal = readVector3f();
+    
+    getToken(token);
+    assert (!strcmp(token, "area"));
+    area = readFloat();
+
+    getToken(token);
+    assert (!strcmp(token, "}"));
+    Material *material = new Material(intensity);
+    Mesh *answer = new Mesh(filename,material);
+        
+    Light *areaLight = new VolAreaLight(answer, material,color,normal,area);
     
     return areaLight;
 

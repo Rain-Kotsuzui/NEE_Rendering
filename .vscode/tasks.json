@@ -7,7 +7,7 @@
 			"command": "cmake",
 			"args": [
 				"-B",
-				"build",
+				"build3",
 				"-DCMAKE_BUILD_TYPE=Debug"
 			],
 			"problemMatcher": [
@@ -24,7 +24,7 @@
 			"command": "cmake",
 			"args": [
 				"--build",
-				"build"
+				"build3"
 			],
 			"problemMatcher": [
 				"$gcc"
@@ -51,7 +51,7 @@
             "label": "clean",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/build"
+                "cwd": "${workspaceFolder}/build3"
             },
             "command": "rm",
             "args": [

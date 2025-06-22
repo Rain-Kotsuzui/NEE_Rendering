@@ -18,6 +18,11 @@ public:
         material = m;
         normal = n;
     }
+    Hit(const Vector3f &n) {
+        t = 1e38;
+        material = nullptr;
+        normal = n;
+    }
 
     Hit(const Hit &h) {
         t = h.t;
@@ -28,9 +33,8 @@ public:
     // destructor
     ~Hit() = default;
     
-    void resetRemainMaterial() {
+    void resetRemainMaterial_Normal() {
         t = 1e38;
-        normal = Vector3f::ZERO;
     }
     float getT() const {
         return t;
@@ -60,7 +64,7 @@ private:
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Hit &h) {
-    os << "Hit <" << h.getT() << ", " << h.getNormal() << ">";
+    //os << "Hit <" << h.getT() << ", " << h.getNormal() << ">";
     return os;
 }
 

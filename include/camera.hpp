@@ -28,7 +28,7 @@ public:
 
     int getWidth() const { return width; }
     int getHeight() const { return height; }
-
+    Vector3f getDirection() const{return direction;}
 protected:
     // Extrinsic parameters
     Vector3f center;
