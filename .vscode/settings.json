@@ -76,5 +76,6 @@
         "typeindex": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "idf.pythonInstallPath": "/home/ahxbxa/anaconda3/bin/python"
 }

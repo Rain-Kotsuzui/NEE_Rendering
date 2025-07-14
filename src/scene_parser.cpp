@@ -127,7 +127,7 @@ void SceneParser::parsePerspectiveCamera() {
     float focus = readInt();
     getToken(token);
     assert (!strcmp(token, "lens"));
-    float lens = readInt();
+    float lens = readFloat();
     getToken(token);
     assert (!strcmp(token, "}"));
     camera = new PerspectiveCamera(center, direction.normalized(), up, width, height, angle_radians,focus,lens);
@@ -296,7 +296,7 @@ Light *SceneParser::parseVolAreaLight() {
 
     getToken(token);
     assert (!strcmp(token, "normal"));
-    normal = readVector3f();
+    normal = readVector3f().normalized();
     
     getToken(token);
     assert (!strcmp(token, "area"));

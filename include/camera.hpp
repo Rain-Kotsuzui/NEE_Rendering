@@ -51,7 +51,7 @@ public:
                       const Vector3f &up, int imgW, int imgH, float angle, float focus_dist = 1, float lens_radius = 0)
         : Camera(center, direction, up, imgW, imgH, focus_dist, lens_radius),
           angle(angle) {}
-
+//焦距
     Vector3f random_unit_disk()
     {
         std::random_device rd;  // 用于获取随机数种子
@@ -62,6 +62,7 @@ public:
         double phi = dis(gen);
         return Vector3f(sqrt(r) * cos(phi), sqrt(r) * sin(phi), 0);
     }
+//MSAA
     const Vector2f random_Antialiasing()
     {
         std::random_device rd;  // 用于获取随机数种子

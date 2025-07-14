@@ -6,8 +6,8 @@
         "request": "launch",
         "program": "${workspaceFolder}/build2/final",
         "args": [
-            "testcases/focus.txt",
-            "output/focus.bmp",
+            "testcases/volLight_2.txt",
+            "output/z.bmp",
             "NEE"
         ],
         "stopAtEntry": false,

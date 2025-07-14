@@ -9,7 +9,7 @@ static const string PT = "basic_2";
 static const string NEE ="NEE";
 static const int MAX_BOUNCE = 10;                          // maximum number of bounces for ray tracing
 static const int SAMPLE_COUNT = 70;                               // 采样次数
-static const int VOLLIGHT_SAMPLE_COUNT = 20;                               // 采样次数
+static const int VOLLIGHT_SAMPLE_COUNT = 10;                               // 采样次数
 
 static const double DEFAULT_KS = 0.6;                      // 反射系数
 static const double DEFAULT_KR = 1;                        // 折射系数

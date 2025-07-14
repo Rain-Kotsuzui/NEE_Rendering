@@ -1,3 +1,13 @@
+/**
+ * @file main.cpp
+ * @brief
+ * @version 0.1
+ * @date 2025-07-14
+ *
+ * @copyright Copyright (c) 2025
+ *
+ */
+
 #include <cassert>
 #include <cmath>
 #include <cstdio>
@@ -54,7 +64,7 @@ int main(int argc, char *argv[])
   // gamma矫正
   Vector3f r_max = Vector3f::ZERO;
   // OpenMP并行加速
-  int numP = 4;
+  int numP = 16;
   omp_set_num_threads(numP);
   {
 #pragma omp parallel for
@@ -78,7 +88,7 @@ int main(int argc, char *argv[])
   }
 
   renderedImg.SaveImage(outputFile.c_str());
-  
+
   omp_set_num_threads(numP);
   {
 #pragma omp parallel for
@@ -86,12 +96,12 @@ int main(int argc, char *argv[])
     {
       int u = index % camera->getWidth();
       int v = index / camera->getWidth();
-      Vector3f color = renderedImg.GetPixel(u, v).pow(1.0f/GAMMA);
+      Vector3f color = renderedImg.GetPixel(u, v).pow(1.0f / GAMMA);
       gammaImg.SetPixel(u, v, color);
     }
   }
-  gammaImg.SaveImage((outputFile.substr(0,outputFile.length()-4)+"_gamma.bmp").c_str());
-  
+  gammaImg.SaveImage((outputFile.substr(0, outputFile.length() - 4) + "_gamma.bmp").c_str());
+
   std::cout << numP << " threads, " << timer.getTime() << " seconds cost";
   return 0;
 }

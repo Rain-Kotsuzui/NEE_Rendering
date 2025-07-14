@@ -220,9 +220,11 @@ public:
                 if (light->typeLight() <= 3)
                     if (!NEE_getcolor(lastHit_N, isIntersect, baseGroup, hit, camRay, sampleRay, light, bounce, result, pdf_hemi, pdf_light))
                         break;
-                if (light->typeLight() == 4)
+                if ((!bounce||bounce==1)&&light->typeLight() == 4)
                 // 体积光
                 {
+                    if(bounce ==1)
+                    break;
                     Vector3f volLight = Vector3f::ZERO;
                     getVolLight(volLight, light, baseGroup, hit, camRay);
                     result += volLight * camRay.getThrought();
